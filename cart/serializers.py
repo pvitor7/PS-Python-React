@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Cart, CartProducts
 from products.models import Products
 from django.forms.models import model_to_dict
+from orders.models import OrderProducts, Orders
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -40,7 +41,26 @@ class CartCleanSerializer(serializers.ModelSerializer):
 
     def get_extra_kwargs(self):
         if self.context['request'].data['is_finished']:
+            
+            new_order = Orders.objects.create(user=self.context['request'].user);
             cart = Cart.objects.get(user=self.context['request'].user)
+            producs_cart = CartProducts.objects.filter(cart=cart)
+            quantity_products = 0
+            delivery = 0
+            subtotal = 0
+            
+            for item in producs_cart:
+                OrderProducts.objects.create(product=item.product, quantity=item.quantity, order=new_order)
+                subtotal = subtotal + Products.objects.get(id=item.product.id).price
+                delivery = delivery + (10 * item.quantity)
+                quantity_products = quantity_products + item.quantity
+            
+            if delivery < 250:
+                Orders.objects.filter(id=new_order.id).update(delivery=delivery, total=subtotal+delivery);
+            else:
+                Orders.objects.filter(id=new_order.id).update(total=subtotal);
+                
+            Orders.objects.filter(id=new_order.id).update(subtotal=subtotal);
             CartProducts.objects.filter(cart=cart).delete()
         return super().get_extra_kwargs()
 
@@ -59,7 +79,6 @@ class CartProductsSerializer(serializers.ModelSerializer):
 
         if len(list_cart_product) > 0:
             CartProducts.objects.filter(product=product).delete()
-            # quatity_updated = list_cart_product[0].quantity + self.context['request'].data['quantity']
             self.context['request'].data['quantity'] = self.context['request'].data['quantity']
 
         self.context['request'].data['cart'] = cart.id
@@ -73,6 +92,3 @@ class CartProductDeleteSerializer(serializers.ModelSerializer):
         model = CartProducts
         fields = ['id', 'cart', 'product', 'quantity']
         
-    def get_extra_kwargs(self):
-        import ipdb ; ipdb.set_trace()
-        return super().get_extra_kwargs()
