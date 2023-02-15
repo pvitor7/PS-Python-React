@@ -18,8 +18,8 @@ class CartSerializer(serializers.ModelSerializer):
         list_products = []
         products = CartProducts.objects.filter(cart=cart)
         for item in products:
-            dict_product = model_to_dict(item)
-            dict_product.pop('cart')
+            product_instance = Products.objects.get(id=item.product.id)
+            dict_product = model_to_dict(product_instance)
             list_products.append(dict_product)
         return list_products
 
