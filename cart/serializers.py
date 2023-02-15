@@ -23,6 +23,12 @@ class CartSerializer(serializers.ModelSerializer):
             list_products.append(dict_product)
         return list_products
 
+    def get_extra_kwargs(self):
+        if self.context['request'].data.get('product_id'):
+            product = Products.objects.get(id=self.context['request'].data['product_id'])
+            CartProducts.objects.filter(product=product).delete()
+        return super().get_extra_kwargs()
+
 
 class CartCleanSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
@@ -58,4 +64,15 @@ class CartProductsSerializer(serializers.ModelSerializer):
 
         self.context['request'].data['cart'] = cart.id
         self.context['request'].data['product'] = product.id
+        return super().get_extra_kwargs()
+
+
+
+class CartProductDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartProducts
+        fields = ['id', 'cart', 'product', 'quantity']
+        
+    def get_extra_kwargs(self):
+        import ipdb ; ipdb.set_trace()
         return super().get_extra_kwargs()
