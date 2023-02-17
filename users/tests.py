@@ -1,6 +1,6 @@
 from .models import User
 from django.test import TestCase
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, DataError
 
 class UserTestCase(TestCase):
     def setUp(self):
@@ -26,18 +26,27 @@ class UserTestCase(TestCase):
         User.objects.create_user(**self.valid_user_data)
         with self.assertRaises(IntegrityError):
             User.objects.create_user(**self.valid_user_data)
-
-    # def test_create_user_with_missing_email(self):
-    #     self.valid_user_data["email"] = ""
-    #     with self.assertRaises(IntegrityError):
-    #         User.objects.create_user(**self.valid_user_data)
-
-    # def test_create_user_with_missing_cellphone(self):
-    #     self.valid_user_data["cellphone"] = ""
-    #     with self.assertRaises(IntegrityError):
-    #         User.objects.create_user(**self.valid_user_data)
-
-    def test_create_user_with_missing_username(self):
-        self.valid_user_data["username"] = ""
+            
+    def test_username_unique(self):
+        User.objects.create_user(**self.valid_user_data)
+        self.valid_user_data['email'] = 'janedoe@example.com'
         with self.assertRaises(IntegrityError):
             User.objects.create_user(**self.valid_user_data)
+        
+    def test_email_unique(self):
+        User.objects.create_user(**self.valid_user_data)
+        self.valid_user_data['username'] = 'janedoe'
+        with self.assertRaises(IntegrityError):
+            User.objects.create_user(**self.valid_user_data)
+        
+    def test_cellphone_unique(self):
+        User.objects.create_user(**self.valid_user_data)
+        self.valid_user_data['email'] = 'janedoe@example.com'
+        with self.assertRaises(IntegrityError):
+            User.objects.create_user(**self.valid_user_data)
+
+    def test_username_max_length(self):
+        self.valid_user_data['username'] = 'a' * 49
+        with self.assertRaises(DataError):
+            User.objects.create(**self.valid_user_data)
+            

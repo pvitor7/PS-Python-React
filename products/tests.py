@@ -1,51 +1,41 @@
 from django.test import TestCase
-from .models import ProductsModel
-from django.core.exceptions import ValidationError
+from .models import Products
 
-class ProductsModelTestCase(TestCase):
+
+class ProductsModelTest(TestCase):
     def setUp(self):
-        ProductsModel.objects.create(
-            name='Super Mario Odyssey',
-            price=197.88,
-            score=100,
-            image='super-mario-odyssey.png'
-        )
-        ProductsModel.objects.create(
-            name='Call Of Duty Infinite Warfare',
-            price=49.99,
-            score=80,
-            image='call-of-duty-infinite-warfare.png'
-        )
+        self.product = {
+            "name": "The Witcher III Wild Hunt",
+            "price": 119.5,
+            "score": 250,
+            "image": "the-witcher-iii-wild-hunt.png",
+        }
 
-    def test_product_name_is_not_null(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertIsNotNone(product.name)
+    def test_create_product_with_valid_data(self):
+        new_product = Products.objects.create(**self.product)
+        self.assertEqual(new_product.name, self.product["name"])
+        self.assertEqual(new_product.price, self.product["price"])
+        self.assertEqual(new_product.score, self.product["score"])
+        self.assertEqual(new_product.image, self.product["image"])
 
-    def test_product_price_is_not_null(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertIsNotNone(product.price)
+    def test_name_field(self):
+        name = Products._meta.get_field("name")
+        self.assertEquals(name.max_length, 100)
+        self.assertFalse(name.null)
+        self.assertFalse(name.blank)
 
-    def test_product_score_is_not_null(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertIsNotNone(product.score)
+    def test_price_field(self):
+        price = Products._meta.get_field("price")
+        self.assertFalse(price.null)
+        self.assertFalse(price.blank)
 
-    def test_product_image_is_not_null(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertIsNotNone(product.image)
+    def test_score_field(self):
+        score = Products._meta.get_field("score")
+        self.assertFalse(score.null)
+        self.assertFalse(score.blank)
 
-    def test_product_name_is_not_blank(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertNotEqual(product.name, '')
-
-    def test_product_price_is_not_blank(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertNotEqual(product.price, '')
-
-    def test_product_score_is_not_blank(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertNotEqual(product.score, '')
-
-    def test_product_image_is_not_blank(self):
-        product = ProductsModel.objects.get(name='Super Mario Odyssey')
-        self.assertNotEqual(product.image, '')
-        
+    def test_image_field(self):
+        image = Products._meta.get_field("image")
+        self.assertEquals(image.max_length, 100)
+        self.assertFalse(image.null)
+        self.assertFalse(image.blank)
