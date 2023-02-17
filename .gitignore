@@ -3,3 +3,4 @@ __pycache__
 assets.zip
 .env
 db.sqlite3
+migrations

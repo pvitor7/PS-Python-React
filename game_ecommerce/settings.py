@@ -157,5 +157,17 @@ REST_FRAMEWORK = {
     ),
 #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 #     'PAGE_SIZE' : 5,
-#     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+from drf_spectacular.utils import extend_schema
+from django.http import JsonResponse
+
+# Exemplo de view
+@extend_schema(
+    description='Some description',
+    parameters=[],
+    responses={200: None},
+)
+def example_view(request):
+    return JsonResponse({'example': 'example'})

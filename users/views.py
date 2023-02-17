@@ -3,11 +3,10 @@ from .serializers import LoginSerializer, UserSerializer, UserUpdateSerializer, 
 from rest_framework import generics
 from .models import User
 from rest_framework.views import Request, Response, APIView, status
-from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-
+from cart.utils import SerializerByMethodMixin
 from .permissions import UpdateAndDelete
 
 
@@ -16,25 +15,16 @@ class UserCreateView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 
-class UserRetriveView(generics.RetrieveAPIView):
+
+class UserIdView(SerializerByMethodMixin, generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, UpdateAndDelete]
     queryset = User.objects.all()
-    serializer_class = UserRetriveSerializer
-    
-
-class UserUpdatedView(generics.UpdateAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, UpdateAndDelete]
-    serializer_class = UserUpdateSerializer
-    queryset = User.objects.all()
-
-
-class UserDeactiveView(generics.DestroyAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, UpdateAndDelete]
-    serializer_class = UserDeactiveSerializer
-    queryset = User.objects.all()
+    serializer_map = {
+        'GET': UserRetriveSerializer,
+        'PATCH': UserUpdateSerializer,
+        'DELETE': UserSerializer
+    }
 
     
 class LoginView(APIView):

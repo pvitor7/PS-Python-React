@@ -12,7 +12,7 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'products',
-                  'createdAt', 'updatedAt',  'is_finished']
+                  'created_at', 'updated_at',  'is_finished']
 
     def get_products(self, instance):
         cart = Cart.objects.get(user=self.context['request'].user)
@@ -37,7 +37,7 @@ class CartCleanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user',
-                  'createdAt', 'updatedAt',  'is_finished']
+                  'created_at', 'updated_at',  'is_finished']
 
     def get_extra_kwargs(self):
         if self.context['request'].data['is_finished']:

@@ -10,7 +10,7 @@ class Orders(models.Model):
     subtotal = models.DecimalField( max_digits=9, decimal_places=2, default=0)
     delivery = models.DecimalField( max_digits=9, decimal_places=2, default=0)
     total = models.DecimalField( max_digits=9, decimal_places=2, default=0)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
         
 
