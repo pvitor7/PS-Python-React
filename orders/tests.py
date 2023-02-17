@@ -29,7 +29,7 @@ class OrderModelTest(TestCase):
 
     def test_orders_createdAt(self):
         order = Orders.objects.get(id=self.order.id)
-        self.assertIsNotNone(order.createdAt)
+        self.assertIsNotNone(order.created_at)
 
     def test_orderproducts_order_foreign_key(self):
         orderproduct = OrderProducts.objects.get(id=self.orderproduct.id)
